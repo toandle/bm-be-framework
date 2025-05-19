@@ -1,4 +1,11 @@
 export const AUTH_SERVICE = 'auth-service';
 export const RESOURCE_SERVICE = 'resource-service';
 export const BUSINESS_SERVICE = 'business-service';
-export const API_GATEWAY = 'api-gateway';
+export const NOTIFICATION_SERVICE = 'notification-service';
+export const BOOKING_SERVICE = 'booking-service';
+export const INVOICE_SERVICE = 'invoice-service';
+export const BANKING_SERVICE = 'banking-service';
+export const KYC_SERVICE = 'kyc-service';
+export const SEARCH_SERVICE = 'search-service';
+export const AUDIT_SERVICE = 'audit-service';
+export const ADMIN_SERVICE = 'admin-service';

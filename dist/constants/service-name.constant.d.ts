@@ -1,4 +1,11 @@
 export declare const AUTH_SERVICE = "auth-service";
 export declare const RESOURCE_SERVICE = "resource-service";
 export declare const BUSINESS_SERVICE = "business-service";
-export declare const API_GATEWAY = "api-gateway";
+export declare const NOTIFICATION_SERVICE = "notification-service";
+export declare const BOOKING_SERVICE = "booking-service";
+export declare const INVOICE_SERVICE = "invoice-service";
+export declare const BANKING_SERVICE = "banking-service";
+export declare const KYC_SERVICE = "kyc-service";
+export declare const SEARCH_SERVICE = "search-service";
+export declare const AUDIT_SERVICE = "audit-service";
+export declare const ADMIN_SERVICE = "admin-service";

@@ -1,0 +1,1 @@
+{"version":3,"file":"base-response.payload.js","sourceRoot":"","sources":["../../src/payloads/base-response.payload.ts"],"names":[],"mappings":";;;AAAA,MAAa,mBAAmB;IAI5B,YAAY,IAAO,EAAE,SAAiB;QAClC,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,SAAS,GAAG,SAAS,CAAC;IAC/B,CAAC;CACJ;AARD,kDAQC"}
