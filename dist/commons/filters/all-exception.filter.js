@@ -10,7 +10,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AllExceptionsFilter = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
-const rxjs_1 = require("rxjs");
 const exceptions_1 = require("../exceptions");
 let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
     constructor() {
@@ -49,10 +48,7 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
             errorResponse.message = exception.message;
         }
         this.logger.log('Error: ', errorResponse);
-        return (0, rxjs_1.throwError)(() => ({
-            success: false,
-            ...errorResponse,
-        }));
+        throw new microservices_1.RpcException(errorResponse);
     }
 };
 exports.AllExceptionsFilter = AllExceptionsFilter;

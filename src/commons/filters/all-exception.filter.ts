@@ -1,6 +1,5 @@
 import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { throwError } from 'rxjs';
 import { ErrorCode } from '../exceptions';
 
 @Catch()
@@ -40,9 +39,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
         this.logger.log('Error: ', errorResponse);
 
-        return throwError(() => ({
-            success: false,
-            ...errorResponse,
-        }));
+        throw new RpcException(errorResponse);
     }
 }
