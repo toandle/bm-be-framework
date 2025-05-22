@@ -1,7 +1,6 @@
 import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpStatus, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { ApplicationException } from '../exceptions/application-exception';
-import { ErrorCode } from '../exceptions';
+import { ApplicationException, ErrorCode } from '../exceptions';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -16,7 +15,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
             errors: [],
         };
 
-        // RpcException Or ApplicationException
+        const error = (exception as any)?.error;
+
+        // ApplicationException from other microservices
         if (exception instanceof RpcException) {
             const err = exception.getError();
             if (typeof err === 'object' && err !== null) {
@@ -24,6 +25,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
             } else {
                 errorResponse.message = String(err);
             }
+            // ApplicationException throw from other microservices
+        } else if (error && typeof error === 'object' && error.code) {
+            errorResponse = {
+                message: error.message,
+                code: error.code,
+                statusCode: error.statusCode,
+                errors: error.errors ? error.errors : [],
+            };
             // Class validator
         } else if (exception instanceof BadRequestException) {
             const response = exception.getResponse();

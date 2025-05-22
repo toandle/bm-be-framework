@@ -10,7 +10,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AllExceptionsFilter = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
-const application_exception_1 = require("../exceptions/application-exception");
 const exceptions_1 = require("../exceptions");
 let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
     constructor() {
@@ -23,6 +22,7 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
             message: 'Internal server error',
             errors: [],
         };
+        const error = exception?.error;
         if (exception instanceof microservices_1.RpcException) {
             const err = exception.getError();
             if (typeof err === 'object' && err !== null) {
@@ -31,6 +31,14 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
             else {
                 errorResponse.message = String(err);
             }
+        }
+        else if (error && typeof error === 'object' && error.code) {
+            errorResponse = {
+                message: error.message,
+                code: error.code,
+                statusCode: error.statusCode,
+                errors: error.errors ? error.errors : [],
+            };
         }
         else if (exception instanceof common_1.BadRequestException) {
             const response = exception.getResponse();
@@ -45,7 +53,7 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
             errorResponse.message = exception.message;
         }
         this.logger.error('Error: ', errorResponse);
-        throw new application_exception_1.ApplicationException({ success: false, ...errorResponse });
+        throw new exceptions_1.ApplicationException({ success: false, ...errorResponse });
     }
 };
 exports.AllExceptionsFilter = AllExceptionsFilter;
