@@ -10,6 +10,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AllExceptionsFilter = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
+const application_exception_1 = require("../exceptions/application-exception");
 const exceptions_1 = require("../exceptions");
 let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
     constructor() {
@@ -17,8 +18,10 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
     }
     catch(exception, _host) {
         let errorResponse = {
-            message: 'Internal error',
             code: exceptions_1.ErrorCode.INTERNAL_SERVER_ERROR,
+            statusCode: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Internal server error',
+            errors: [],
         };
         if (exception instanceof microservices_1.RpcException) {
             const err = exception.getError();
@@ -35,20 +38,14 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
                 message: 'Validation failed',
                 code: exceptions_1.ErrorCode.VALIDATION,
                 errors: Array.isArray(response.message) ? response.message : [response],
+                statusCode: common_1.HttpStatus.BAD_REQUEST,
             };
         }
-        else if (exception instanceof common_1.HttpException) {
-            errorResponse = {
-                message: exception.message,
-                code: exceptions_1.ErrorCode.UNKNOWN,
-                statusCode: exception.getStatus(),
-            };
-        }
-        else if (exception instanceof Error) {
+        else {
             errorResponse.message = exception.message;
         }
-        this.logger.log('Error: ', errorResponse);
-        throw new microservices_1.RpcException(errorResponse);
+        this.logger.error('Error: ', errorResponse);
+        throw new application_exception_1.ApplicationException({ success: false, ...errorResponse });
     }
 };
 exports.AllExceptionsFilter = AllExceptionsFilter;

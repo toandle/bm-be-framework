@@ -5,9 +5,8 @@ const microservices_1 = require("@nestjs/microservices");
 class ApplicationException extends microservices_1.RpcException {
     constructor(error) {
         super({
-            code: error.code,
-            message: error.message,
-            errors: error.errors,
+            success: false,
+            ...error,
         });
     }
 }

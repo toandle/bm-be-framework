@@ -1,5 +1,6 @@
-import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
+import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpStatus, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
+import { ApplicationException } from '../exceptions/application-exception';
 import { ErrorCode } from '../exceptions';
 
 @Catch()
@@ -7,12 +8,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
     private logger = new Logger(AllExceptionsFilter.name);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    catch(exception: unknown, _host: ArgumentsHost) {
+    catch(exception: Error, _host: ArgumentsHost) {
         let errorResponse: any = {
-            message: 'Internal error',
             code: ErrorCode.INTERNAL_SERVER_ERROR,
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Internal server error',
+            errors: [],
         };
 
+        // RpcException Or ApplicationException
         if (exception instanceof RpcException) {
             const err = exception.getError();
             if (typeof err === 'object' && err !== null) {
@@ -20,25 +24,22 @@ export class AllExceptionsFilter implements ExceptionFilter {
             } else {
                 errorResponse.message = String(err);
             }
+            // Class validator
         } else if (exception instanceof BadRequestException) {
             const response = exception.getResponse();
             errorResponse = {
                 message: 'Validation failed',
                 code: ErrorCode.VALIDATION,
                 errors: Array.isArray((response as any).message) ? (response as any).message : [response],
+                statusCode: HttpStatus.BAD_REQUEST,
             };
-        } else if (exception instanceof HttpException) {
-            errorResponse = {
-                message: exception.message,
-                code: ErrorCode.UNKNOWN,
-                statusCode: exception.getStatus(),
-            };
-        } else if (exception instanceof Error) {
+            // Other exceptions
+        } else {
             errorResponse.message = exception.message;
         }
 
-        this.logger.log('Error: ', errorResponse);
+        this.logger.error('Error: ', errorResponse);
 
-        throw new RpcException(errorResponse);
+        throw new ApplicationException({ success: false, ...errorResponse });
     }
 }
