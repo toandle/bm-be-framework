@@ -1,6 +1,7 @@
 import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { throwError } from 'rxjs';
+import { ErrorCode } from '../exceptions';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -10,7 +11,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     catch(exception: unknown, _host: ArgumentsHost) {
         let errorResponse: any = {
             message: 'Internal error',
-            code: 'INTERNAL_ERROR',
+            code: ErrorCode.INTERNAL_SERVER_ERROR,
         };
 
         if (exception instanceof RpcException) {
@@ -24,13 +25,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
             const response = exception.getResponse();
             errorResponse = {
                 message: 'Validation failed',
-                code: 'VALIDATION_ERROR',
+                code: ErrorCode.VALIDATION,
                 errors: Array.isArray((response as any).message) ? (response as any).message : [response],
             };
         } else if (exception instanceof HttpException) {
             errorResponse = {
                 message: exception.message,
-                code: 'HTTP_ERROR',
+                code: ErrorCode.UNKNOWN,
                 statusCode: exception.getStatus(),
             };
         } else if (exception instanceof Error) {

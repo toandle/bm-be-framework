@@ -11,6 +11,7 @@ exports.AllExceptionsFilter = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
 const rxjs_1 = require("rxjs");
+const exceptions_1 = require("../exceptions");
 let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
     constructor() {
         this.logger = new common_1.Logger(AllExceptionsFilter_1.name);
@@ -18,7 +19,7 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
     catch(exception, _host) {
         let errorResponse = {
             message: 'Internal error',
-            code: 'INTERNAL_ERROR',
+            code: exceptions_1.ErrorCode.INTERNAL_SERVER_ERROR,
         };
         if (exception instanceof microservices_1.RpcException) {
             const err = exception.getError();
@@ -33,14 +34,14 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
             const response = exception.getResponse();
             errorResponse = {
                 message: 'Validation failed',
-                code: 'VALIDATION_ERROR',
+                code: exceptions_1.ErrorCode.VALIDATION,
                 errors: Array.isArray(response.message) ? response.message : [response],
             };
         }
         else if (exception instanceof common_1.HttpException) {
             errorResponse = {
                 message: exception.message,
-                code: 'HTTP_ERROR',
+                code: exceptions_1.ErrorCode.UNKNOWN,
                 statusCode: exception.getStatus(),
             };
         }
