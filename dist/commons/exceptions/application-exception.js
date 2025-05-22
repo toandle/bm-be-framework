@@ -3,11 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApplicationException = void 0;
 const microservices_1 = require("@nestjs/microservices");
 class ApplicationException extends microservices_1.RpcException {
-    constructor(code, message, errors) {
+    constructor(error) {
         super({
-            code: code,
-            message: message,
-            errors,
+            code: error.code,
+            message: error.message,
+            errors: error.errors,
         });
     }
 }

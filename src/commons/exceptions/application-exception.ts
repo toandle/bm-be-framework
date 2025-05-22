@@ -1,11 +1,11 @@
 import { RpcException } from '@nestjs/microservices';
 
 export class ApplicationException extends RpcException {
-    constructor(code: string, message: string, errors: string[]) {
+    constructor(error: { code: string; message: string; errors: string[] }) {
         super({
-            code: code,
-            message: message,
-            errors,
+            code: error.code,
+            message: error.message,
+            errors: error.errors,
         });
     }
 }
